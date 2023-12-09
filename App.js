@@ -6,6 +6,7 @@ import {
   StyleSheet,
   RefreshControl,
   Text,
+  TextInput,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -22,6 +23,7 @@ const App = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -34,7 +36,7 @@ const App = () => {
       );
       if (response.status === 200) {
         setEmployees(response.data);
-        setError(null); 
+        setError(null);
       } else {
         setError("Failed to fetch data");
       }
@@ -53,6 +55,14 @@ const App = () => {
     }
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const filteredEmployees = employees.filter((employee) =>
+    employee.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
@@ -69,12 +79,12 @@ const App = () => {
                   onPress={() =>
                     setViewType(viewType === "list" ? "card" : "list")
                   }
-                  color="#3498db" 
+                  color="#3498db"
                 />
                 <Button
                   title="Add"
                   onPress={() => navigation.navigate("AddEmployee")}
-                  color="#27ae60" 
+                  color="#27ae60"
                 />
               </View>
             ),
@@ -82,11 +92,17 @@ const App = () => {
         >
           {({ navigation }) => (
             <View>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search by name"
+                value={searchQuery}
+                onChangeText={handleSearch}
+              />
               {error ? (
                 <Text>Error: {error}</Text>
               ) : (
                 <FlatList
-                  data={employees}
+                  data={filteredEmployees}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({ item }) => (
                     <EmployeeCard
@@ -134,7 +150,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingRight: 10,
-    
+  },
+  searchInput: {
+    height: 40,
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    margin: 23,
   },
 });
 
