@@ -1,3 +1,4 @@
+// EmployeeCard.js
 import React from "react";
 import {
   View,
@@ -5,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator,
 } from "react-native";
 
 const EmployeeCard = ({ employee, viewType, onSelect, navigation }) => {
