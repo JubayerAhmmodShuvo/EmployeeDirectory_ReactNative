@@ -5,13 +5,14 @@ import {
   Button,
   StyleSheet,
   RefreshControl,
-  ActivityIndicator,
+  Text,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import axios from "axios";
 import EmployeeCard from "./EmployeeCard";
 import EmployeeDetailsScreen from "./EmployeeDetailsScreen";
+import AddEmployeeScreen from "./AddEmployeeScreen";
 
 const Stack = createStackNavigator();
 
@@ -33,7 +34,7 @@ const App = () => {
       );
       if (response.status === 200) {
         setEmployees(response.data);
-        setError(null); // Clear any previous errors
+        setError(null); 
       } else {
         setError("Failed to fetch data");
       }
@@ -57,19 +58,27 @@ const App = () => {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
           name="Home"
-          options={{
+          options={({ navigation }) => ({
             title: "Employee Directory",
             headerRight: () => (
-              <Button
-                title={
-                  viewType === "list" ? "Switch to Cards" : "Switch to List"
-                }
-                onPress={() =>
-                  setViewType(viewType === "list" ? "card" : "list")
-                }
-              />
+              <View style={styles.headerButtonContainer}>
+                <Button
+                  title={
+                    viewType === "list" ? "Switch to Cards" : "Switch to List"
+                  }
+                  onPress={() =>
+                    setViewType(viewType === "list" ? "card" : "list")
+                  }
+                  color="#3498db" 
+                />
+                <Button
+                  title="Add"
+                  onPress={() => navigation.navigate("AddEmployee")}
+                  color="#27ae60" 
+                />
+              </View>
             ),
-          }}
+          })}
         >
           {({ navigation }) => (
             <View>
@@ -110,9 +119,23 @@ const App = () => {
           component={EmployeeDetailsScreen}
           options={{ title: "Employee Details" }}
         />
+        <Stack.Screen
+          name="AddEmployee"
+          component={AddEmployeeScreen}
+          options={{ title: "Add Employee" }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  headerButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingRight: 10,
+    
+  },
+});
 
 export default App;

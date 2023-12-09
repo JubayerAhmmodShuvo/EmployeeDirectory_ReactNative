@@ -1,21 +1,20 @@
-// AddEmployeeScreen.js
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const AddEmployeeScreen = () => {
- const [name, setName] = useState("");
- const [email, setEmail] = useState("");
- const [number, setNumber] = useState("");
- const navigation = useNavigation();
+  const navigation = useNavigation(); 
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [number, setNumber] = useState("");
 
   const handleAddEmployee = () => {
-    // Perform any validation or API calls to add the employee
     console.log("Adding Employee:", { name, email, number });
 
-    // Reset the form or navigate to another screen after adding the employee
     navigation.navigate("Home");
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Name:</Text>
