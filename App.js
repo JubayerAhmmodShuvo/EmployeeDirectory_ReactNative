@@ -5,6 +5,7 @@ import {
   Button,
   StyleSheet,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -19,6 +20,7 @@ const App = () => {
   const [viewType, setViewType] = useState("list");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -29,19 +31,25 @@ const App = () => {
       const response = await axios.get(
         "https://mocki.io/v1/3a4b56bd-ad05-4b12-a181-1eb9a4f5ac8d"
       );
-      setEmployees(response.data);
+      if (response.status === 200) {
+        setEmployees(response.data);
+        setError(null); // Clear any previous errors
+      } else {
+        setError("Failed to fetch data");
+      }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      setError("Error fetching data");
     }
   };
 
   const onRefresh = async () => {
     setRefreshing(true);
 
-    // Your data fetching logic here, for example:
-    await fetchData();
-
-    setRefreshing(false);
+    try {
+      await fetchData();
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   return (
@@ -65,31 +73,35 @@ const App = () => {
         >
           {({ navigation }) => (
             <View>
-              <FlatList
-                data={employees}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <EmployeeCard
-                    employee={item}
-                    viewType={viewType}
-                    onSelect={() => {
-                      if (viewType === "list") {
-                        setSelectedEmployee(item);
-                        navigation.navigate("EmployeeDetails", {
-                          employee: item,
-                        });
-                      }
-                    }}
-                    navigation={navigation}
-                  />
-                )}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                  />
-                }
-              />
+              {error ? (
+                <Text>Error: {error}</Text>
+              ) : (
+                <FlatList
+                  data={employees}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <EmployeeCard
+                      employee={item}
+                      viewType={viewType}
+                      onSelect={() => {
+                        if (viewType === "list") {
+                          setSelectedEmployee(item);
+                          navigation.navigate("EmployeeDetails", {
+                            employee: item,
+                          });
+                        }
+                      }}
+                      navigation={navigation}
+                    />
+                  )}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
+                />
+              )}
             </View>
           )}
         </Stack.Screen>
@@ -104,11 +116,3 @@ const App = () => {
 };
 
 export default App;
-
-const styles = StyleSheet.create({
-  card: {
-    padding: 16,
-    margin: 8,
-    borderRadius: 8,
-  },
-});
