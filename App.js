@@ -91,7 +91,7 @@ const App = () => {
           })}
         >
           {({ navigation }) => (
-            <View>
+            <View style={styles.container}>
               <TextInput
                 style={styles.searchInput}
                 placeholder="Search by name"
@@ -102,6 +102,7 @@ const App = () => {
                 <Text>Error: {error}</Text>
               ) : (
                 <FlatList
+                  style={{ flex: 1 }}
                   data={filteredEmployees}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({ item }) => (
@@ -157,7 +158,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     paddingHorizontal: 12,
-    margin: 23,
+    margin: 10,
+  },
+  container: {
+    flex: 1,
   },
 });
 
